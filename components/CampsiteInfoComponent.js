@@ -22,7 +22,7 @@ function RenderCampsite(props) {
           reverse
           onPress={() =>
             props.favorite
-              ? console.log("Alredady set as a favorite")
+              ? console.log("Already set as a favorite")
               : props.markFavorite()
           }
         />
