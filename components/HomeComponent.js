@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import { View, Text, ScrollView } from "react-native";
-import { Card } from "react-native-elements";
-import { connect } from "react-redux";
-import { baseUrl } from "../shared/baseUrl";
+import React, { Component } from 'react';
+import { View, Text, Animated } from 'react-native';
+import { Card } from 'react-native-elements';
+import { connect } from 'react-redux';
+import { baseUrl } from '../shared/baseUrl';
 import Loading from './LoadingComponent';
 
 const mapStateToProps = (state) => {
@@ -14,7 +14,7 @@ const mapStateToProps = (state) => {
 };
 
 function RenderItem(props) {
-  const {item} = props;
+  const { item } = props;
 
   if (props.isLoading) {
     return <Loading />;
@@ -37,13 +37,34 @@ function RenderItem(props) {
 }
 
 class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      scaleValue: new Animated.Value(0),
+    };
+  }
+
+  animate() {
+    Animated.timing(this.state.scaleValue, {
+      toValue: 1,
+      duration: 1500,
+      useNativeDriver: true,
+    }).start();
+  }
+
+  componentDidMount() {
+    this.animate();
+  }
+
   static navigationOptions = {
-    title: "Home",
+    title: 'Home',
   };
 
   render() {
     return (
-      <ScrollView>
+      <Animated.ScrollView
+        style={{ transform: [{ scale: this.state.scaleValue }] }}
+      >
         <RenderItem
           item={
             this.props.campsites.campsites.filter(
@@ -71,7 +92,7 @@ class Home extends Component {
           isLoading={this.props.partners.isLoading}
           errMess={this.props.partners.errMess}
         />
-      </ScrollView>
+      </Animated.ScrollView>
     );
   }
 }
