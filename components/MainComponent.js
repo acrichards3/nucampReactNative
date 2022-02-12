@@ -248,7 +248,12 @@ const MainNavigator = createDrawerNavigator(
       screen: LoginNavigator,
       navigationOptions: {
         drawerIcon: ({ tintColor }) => (
-          <Icon name="sign-in" type="font-awesome" size={24} color={tintColor} />
+          <Icon
+            name="sign-in"
+            type="font-awesome"
+            size={24}
+            color={tintColor}
+          />
         ),
       },
     },
@@ -331,23 +336,29 @@ class Main extends Component {
     this.props.fetchPromotions();
     this.props.fetchPartners();
 
-    NetInfo.fetch().then(connectionInfo => {
-      (Platform.OS === 'ios')
-        ? Alert.alert('Initial Network Connectivity Type:', connectionInfo.type)
-        : ToastAndroid.show('Initial Network Connectivity Type: ' +
-          connectionInfo.type, ToastAndroid.LONG);
-    });
-
-    this.unsubscribeNetInfo = NetInfo.addEventListener(connectionInfo => {
-      this.handleConnectivityChange(connectionInfo);
-    })
+    this.showNetInfo();
   }
+
+  showNetInfo = async () => {
+    const connectionInfo = await NetInfo.fetch();
+
+    Platform.OS === 'ios'
+      ? Alert.alert('Initial Network Connectivity Type:', connectionInfo.type)
+      : ToastAndroid.show(
+          'Initial Network Connectivity Type: ' + connectionInfo.type,
+          ToastAndroid.LONG
+        );
+
+    this.unsubscribeNetInfo = NetInfo.addEventListener((connectionInfo) => {
+      this.handleConnectivityChange(connectionInfo);
+    });
+  };
 
   componentWillUnmount() {
     this.unsubscribeNetInfo();
   }
 
-  handleConnectivityChange = connectionInfo => {
+  handleConnectivityChange = (connectionInfo) => {
     let connectionMsg = 'You are now connected to an active network';
     switch (connectionInfo.type) {
       case 'none':
@@ -363,10 +374,10 @@ class Main extends Component {
         connectionMsg = 'You are now connected to a WiFi network';
         break;
     }
-    (Platform.OS === 'ios')
+    Platform.OS === 'ios'
       ? Alert.alert('Connection change:', connectionMsg)
       : ToastAndroid.show(connectionMsg, ToastAndroid.LONG);
-  }
+  };
 
   render() {
     return (
